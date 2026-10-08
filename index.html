@@ -3,7 +3,6 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Sora:wght@400;500;600;700&display=swap">
 
 <style>
-  /* ─── LAYOUT: single-column sections, sticky header ─── */
   :root {
     --bg:       #0e0f14;
     --bg2:      #161820;
@@ -76,7 +75,6 @@
     margin-inline: auto;
   }
 
-  /* ─── HEADER ─── */
   .site-header {
     position: sticky;
     top: env(safe-area-inset-top, 0px);
@@ -110,7 +108,6 @@
   }
   .theme-btn:hover { border-color: var(--amber); color: var(--amber); }
 
-  /* ─── NAV ─── */
   .toc {
     display: flex;
     gap: 6px;
@@ -130,7 +127,6 @@
   }
   .toc a:hover { color: var(--amber); border-color: var(--amber); }
 
-  /* ─── SECTIONS ─── */
   section { padding-block: 36px; border-top: 1px solid var(--border); }
   h2 {
     font-family: var(--mono);
@@ -164,7 +160,6 @@
     color: var(--teal);
   }
 
-  /* ─── ENCODING CARDS ─── */
   .enc-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
@@ -244,7 +239,6 @@
     color: var(--c);
   }
 
-  /* ─── CHARSET BAR ─── */
   .charset-section { margin-top: 32px; }
   .charset-row {
     display: flex;
@@ -280,7 +274,6 @@
   .charset-row[data-enc="a85"] { --c: var(--a85-c); }
   .charset-label { color: var(--c); }
 
-  /* ─── SIZE RATIO BAR ─── */
   .ratio-grid { display: flex; flex-direction: column; gap: 10px; margin-top: 16px; }
   .ratio-row { display: grid; grid-template-columns: 80px 1fr 60px; gap: 10px; align-items: center; }
   .ratio-name { font-family: var(--mono); font-size: 12px; font-weight: 700; color: var(--c); }
@@ -308,7 +301,6 @@
   .ratio-row[data-enc="b85"] { --c: var(--b85-c); }
   .ratio-row[data-enc="a85"] { --c: var(--a85-c); }
 
-  /* ─── DECODE TRACE ─── */
   .trace-intro { margin-bottom: 20px; }
   .layer-list {
     display: flex;
@@ -382,7 +374,6 @@
     margin-bottom: 4px;
   }
 
-  /* ─── DETAIL EXPAND ─── */
   .layer-detail {
     display: none;
     grid-column: 1 / -1;
@@ -406,7 +397,6 @@
   .detail-item .dl { font-size: 10px; color: var(--fg3); font-family: var(--mono); text-transform: uppercase; letter-spacing: .06em; }
   .detail-item .dv { font-family: var(--mono); color: var(--c); font-weight: 600; margin-top: 2px; font-size: 13px; }
 
-  /* ─── WHY BOX ─── */
   .why-box {
     background: var(--bg2);
     border: 1px solid var(--border);
@@ -418,7 +408,6 @@
   .why-box h4 { font-size: 13px; font-weight: 600; margin-bottom: 6px; color: var(--amber); }
   .why-box p { font-size: 13px; margin-bottom: 6px; }
 
-  /* ─── CLUE TABLE ─── */
   .clue-table { width: 100%; border-collapse: collapse; margin-top: 12px; }
   .clue-table th {
     text-align: left;
@@ -440,7 +429,6 @@
   .clue-table td:first-child { font-family: var(--mono); font-weight: 700; }
   .clue-table td code { font-size: .85em; }
 
-  /* ─── SCRIPT SECTION ─── */
   .code-block {
     background: var(--bg2);
     border: 1px solid var(--border);
@@ -461,7 +449,6 @@
   .code-block .st { color: var(--green); }
   .code-block .nm { color: var(--peach); }
 
-  /* ─── FLAG ─── */
   .flag-box {
     background: color-mix(in srgb, var(--green) 8%, var(--bg2));
     border: 1px solid color-mix(in srgb, var(--green) 30%, var(--border));
@@ -496,7 +483,6 @@
   }
   .flag-copy:hover { border-color: var(--green); color: var(--green); }
 
-  /* ─── RESPONSIVE ─── */
   @media (max-width: 600px) {
     .enc-grid { grid-template-columns: 1fr; }
     .layer { grid-template-columns: 28px 90px 1fr; }
@@ -508,7 +494,6 @@
     .ratio-bar { transition: none; }
   }
 
-  /* layer header row */
   .layer-header {
     display: grid;
     grid-template-columns: 36px 110px 1fr 80px;
@@ -545,7 +530,6 @@
   </div>
 </nav>
 
-<!-- ─── SECTION 1 ─── -->
 <section id="enc">
   <h2><span class="num">01</span>Lima Jenis Encoding</h2>
   <p>Setiap encoding mengubah data biner jadi teks yang "aman" dikirim. Bedanya ada di <strong>charset</strong> (karakter yang dipakai), <strong>rasio ukuran</strong>, dan <strong>padding</strong>.</p>
@@ -639,7 +623,6 @@
 
   </div>
 
-  <!-- Charset comparison -->
   <div class="charset-section">
     <h3 style="font-size:14px;margin-bottom:14px;color:var(--fg2);font-family:var(--mono);text-transform:uppercase;letter-spacing:.06em;">Charset per Encoding — "Hello, World!" </h3>
     <div class="charset-row" data-enc="b16">
@@ -664,7 +647,6 @@
     </div>
   </div>
 
-  <!-- Size ratio -->
   <div style="margin-top: 28px;">
     <h3 style="font-size:14px;margin-bottom:6px;color:var(--fg2);font-family:var(--mono);text-transform:uppercase;letter-spacing:.06em;">Rasio Ukuran Output / Input</h3>
     <p style="font-size:12px;margin-bottom:14px;">Makin tinggi rasio = makin boros karakter = makin mudah diidentifikasi (lebih panjang dari aslinya).</p>
@@ -698,7 +680,6 @@
   </div>
 </section>
 
-<!-- ─── SECTION 2 ─── -->
 <section id="identify">
   <h2><span class="num">02</span>Cara Identifikasi Visual</h2>
   <p>Di CTF, kita tidak selalu tahu enkoding apa yang dipakai. Ini cara membaca ciri-cirinya dengan cepat:</p>
@@ -753,7 +734,6 @@
   </div>
 </section>
 
-<!-- ─── SECTION 3 ─── -->
 <section id="trace">
   <h2><span class="num">03</span>Trace 15-Layer Lengkap</h2>
   <p class="trace-intro">Klik tiap baris untuk melihat detail kenapa layer ini teridentifikasi sebagai encoding tertentu.</p>
@@ -768,7 +748,6 @@
   <div class="layer-list" id="layers"></div>
 </section>
 
-<!-- ─── SECTION 4 ─── -->
 <section id="why">
   <h2><span class="num">04</span>Kenapa Urutannya Bisa Berbeda-beda?</h2>
   <p>Ini bagian yang paling penting untuk dipahami. Enkoding dilakukan <strong>secara acak</strong> — artinya setiap kali challenge ini di-generate, urutannya bisa berbeda.</p>
@@ -809,7 +788,6 @@
   <p style="margin-top:8px;font-size:13px;">Dari 19.735 karakter → 37 karakter (flag). Setiap layer encoding memang menambah overhead ukuran.</p>
 </section>
 
-<!-- ─── SECTION 5 ─── -->
 <section id="script">
   <h2><span class="num">05</span>Script Solver</h2>
   <p>Script ini menggunakan DFS rekursif — mencoba semua metode decode di setiap level dan melanjutkan hanya jika hasilnya valid (printable).</p>
@@ -884,7 +862,6 @@
   </div>
 </section>
 
-<!-- ─── FLAG ─── -->
 <section id="flag">
   <h2><span class="num">06</span>Flag</h2>
   <p>Setelah 15 layer decode, hasilnya:</p>
