@@ -1,0 +1,1072 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Base Jumper — Decode Guide</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Sora:wght@400;500;600;700&display=swap">
+
+<style>
+  /* ─── LAYOUT: single-column sections, sticky header ─── */
+  :root {
+    --bg:       #0e0f14;
+    --bg2:      #161820;
+    --bg3:      #1e2030;
+    --border:   #2a2d3e;
+    --fg:       #cdd6f4;
+    --fg2:      #a6adc8;
+    --fg3:      #585b70;
+    --amber:    #f9a825;
+    --amber2:   #ffe082;
+    --teal:     #89dceb;
+    --green:    #a6e3a1;
+    --red:      #f38ba8;
+    --mauve:    #cba6f7;
+    --blue:     #89b4fa;
+    --peach:    #fab387;
+
+    --b16-c:  #f38ba8;
+    --b32-c:  #fab387;
+    --b64-c:  #a6e3a1;
+    --b85-c:  #89b4fa;
+    --a85-c:  #cba6f7;
+
+    --mono: 'JetBrains Mono', monospace;
+    --sans: 'Sora', sans-serif;
+    color-scheme: dark;
+  }
+
+  @media (prefers-color-scheme: light) {
+    :root:not([data-theme="dark"]) {
+      --bg:     #f8f7f2;
+      --bg2:    #eeecea;
+      --bg3:    #e4e2de;
+      --border: #ccc9c0;
+      --fg:     #1e1d1b;
+      --fg2:    #4a4742;
+      --fg3:    #9e9b96;
+      --amber:  #b8651a;
+      --amber2: #d4820a;
+      color-scheme: light;
+    }
+  }
+  :root[data-theme="light"] {
+    --bg:     #f8f7f2;
+    --bg2:    #eeecea;
+    --bg3:    #e4e2de;
+    --border: #ccc9c0;
+    --fg:     #1e1d1b;
+    --fg2:    #4a4742;
+    --fg3:    #9e9b96;
+    --amber:  #b8651a;
+    --amber2: #d4820a;
+    color-scheme: light;
+  }
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--fg);
+    font-family: var(--sans);
+    font-size: 15px;
+    line-height: 1.7;
+    padding-inline: 16px;
+    padding-block: 0;
+    max-width: 900px;
+    margin-inline: auto;
+  }
+
+  /* ─── HEADER ─── */
+  .site-header {
+    position: sticky;
+    top: env(safe-area-inset-top, 0px);
+    z-index: 100;
+    background: color-mix(in srgb, var(--bg) 88%, transparent);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    padding: 12px 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+  .site-header h1 {
+    font-family: var(--mono);
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--amber);
+    letter-spacing: .05em;
+  }
+  .site-header h1 span { color: var(--fg3); font-weight: 400; }
+  .theme-btn {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    color: var(--fg2);
+    padding: 4px 10px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 12px;
+    font-family: var(--mono);
+  }
+  .theme-btn:hover { border-color: var(--amber); color: var(--amber); }
+
+  /* ─── NAV ─── */
+  .toc {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    padding: 20px 0 8px;
+  }
+  .toc a {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--fg3);
+    text-decoration: none;
+    padding: 4px 10px;
+    border-radius: 4px;
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    transition: .15s;
+  }
+  .toc a:hover { color: var(--amber); border-color: var(--amber); }
+
+  /* ─── SECTIONS ─── */
+  section { padding-block: 36px; border-top: 1px solid var(--border); }
+  h2 {
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .12em;
+    color: var(--amber);
+    margin-bottom: 20px;
+  }
+  h2 .num {
+    color: var(--fg3);
+    margin-right: 8px;
+  }
+  h3 {
+    font-size: 17px;
+    font-weight: 600;
+    margin-bottom: 10px;
+    color: var(--fg);
+    text-wrap: balance;
+  }
+  p { color: var(--fg2); margin-bottom: 12px; max-width: 68ch; }
+  p:last-child { margin-bottom: 0; }
+
+  code {
+    font-family: var(--mono);
+    font-size: .88em;
+    background: var(--bg3);
+    padding: 1px 5px;
+    border-radius: 4px;
+    color: var(--teal);
+  }
+
+  /* ─── ENCODING CARDS ─── */
+  .enc-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 16px;
+    margin-top: 4px;
+  }
+  .enc-card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px;
+    position: relative;
+    overflow: hidden;
+  }
+  .enc-card::before {
+    content: '';
+    position: absolute;
+    inset: 0 0 auto;
+    height: 3px;
+    background: var(--c);
+    border-radius: 12px 12px 0 0;
+  }
+  .enc-card[data-enc="b16"] { --c: var(--b16-c); }
+  .enc-card[data-enc="b32"] { --c: var(--b32-c); }
+  .enc-card[data-enc="b64"] { --c: var(--b64-c); }
+  .enc-card[data-enc="b85"] { --c: var(--b85-c); }
+  .enc-card[data-enc="a85"] { --c: var(--a85-c); }
+
+  .enc-name {
+    font-family: var(--mono);
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--c);
+    margin-bottom: 14px;
+  }
+  .enc-sample {
+    font-family: var(--mono);
+    font-size: 11px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 10px;
+    word-break: break-all;
+    color: var(--fg2);
+    margin-bottom: 14px;
+    line-height: 1.6;
+  }
+  .enc-sample .hl { color: var(--c); }
+
+  .enc-stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+  .stat-box {
+    background: var(--bg3);
+    border-radius: 6px;
+    padding: 8px 10px;
+  }
+  .stat-label { font-size: 10px; color: var(--fg3); font-family: var(--mono); text-transform: uppercase; letter-spacing: .06em; }
+  .stat-val { font-size: 14px; font-weight: 600; font-family: var(--mono); color: var(--fg); margin-top: 2px; }
+
+  .enc-rules { margin-top: 14px; }
+  .enc-rules li {
+    font-size: 12px;
+    color: var(--fg2);
+    list-style: none;
+    padding-left: 14px;
+    position: relative;
+    margin-bottom: 4px;
+    line-height: 1.5;
+  }
+  .enc-rules li::before {
+    content: '·';
+    position: absolute;
+    left: 4px;
+    color: var(--c);
+  }
+
+  /* ─── CHARSET BAR ─── */
+  .charset-section { margin-top: 32px; }
+  .charset-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    margin-bottom: 12px;
+    flex-wrap: wrap;
+  }
+  .charset-label {
+    font-family: var(--mono);
+    font-size: 12px;
+    font-weight: 700;
+    min-width: 70px;
+    padding-top: 2px;
+  }
+  .charset-chars {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--fg2);
+    background: var(--bg2);
+    border-radius: 6px;
+    padding: 6px 10px;
+    flex: 1;
+    min-width: 0;
+    word-break: break-all;
+    border-left: 3px solid var(--c);
+    line-height: 1.7;
+  }
+  .charset-row[data-enc="b16"] { --c: var(--b16-c); }
+  .charset-row[data-enc="b32"] { --c: var(--b32-c); }
+  .charset-row[data-enc="b64"] { --c: var(--b64-c); }
+  .charset-row[data-enc="b85"] { --c: var(--b85-c); }
+  .charset-row[data-enc="a85"] { --c: var(--a85-c); }
+  .charset-label { color: var(--c); }
+
+  /* ─── SIZE RATIO BAR ─── */
+  .ratio-grid { display: flex; flex-direction: column; gap: 10px; margin-top: 16px; }
+  .ratio-row { display: grid; grid-template-columns: 80px 1fr 60px; gap: 10px; align-items: center; }
+  .ratio-name { font-family: var(--mono); font-size: 12px; font-weight: 700; color: var(--c); }
+  .ratio-bar-wrap { background: var(--bg2); border-radius: 4px; height: 22px; overflow: hidden; }
+  .ratio-bar {
+    height: 100%;
+    background: var(--c);
+    opacity: .75;
+    border-radius: 4px;
+    transition: width .6s ease;
+    display: flex;
+    align-items: center;
+    padding-left: 8px;
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--bg);
+    font-weight: 700;
+    white-space: nowrap;
+    overflow: hidden;
+  }
+  .ratio-num { font-family: var(--mono); font-size: 12px; color: var(--fg2); text-align: right; }
+  .ratio-row[data-enc="b16"] { --c: var(--b16-c); }
+  .ratio-row[data-enc="b32"] { --c: var(--b32-c); }
+  .ratio-row[data-enc="b64"] { --c: var(--b64-c); }
+  .ratio-row[data-enc="b85"] { --c: var(--b85-c); }
+  .ratio-row[data-enc="a85"] { --c: var(--a85-c); }
+
+  /* ─── DECODE TRACE ─── */
+  .trace-intro { margin-bottom: 20px; }
+  .layer-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+  .layer {
+    display: grid;
+    grid-template-columns: 36px 110px 1fr 80px;
+    gap: 0 12px;
+    align-items: start;
+    position: relative;
+    padding-block: 10px;
+    border-bottom: 1px solid var(--border);
+    cursor: pointer;
+    transition: background .1s;
+  }
+  .layer:hover { background: var(--bg2); }
+  .layer:last-child { border-bottom: none; }
+
+  .layer-num {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--fg3);
+    text-align: center;
+    padding-top: 2px;
+  }
+  .layer-method {
+    font-family: var(--mono);
+    font-size: 12px;
+    font-weight: 700;
+    padding-top: 2px;
+    color: var(--c);
+  }
+  .layer-preview {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--fg2);
+    word-break: break-all;
+    line-height: 1.6;
+    min-width: 0;
+  }
+  .layer-len {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--fg3);
+    text-align: right;
+    white-space: nowrap;
+    padding-top: 2px;
+  }
+  .layer-len span { color: var(--fg2); }
+
+  .layer[data-enc="base85"]  { --c: var(--b85-c); }
+  .layer[data-enc="base64"]  { --c: var(--b64-c); }
+  .layer[data-enc="base16"]  { --c: var(--b16-c); }
+  .layer[data-enc="base32"]  { --c: var(--b32-c); }
+  .layer[data-enc="ascii85"] { --c: var(--a85-c); }
+  .layer[data-enc="input"]   { --c: var(--amber); background: color-mix(in srgb, var(--bg2) 60%, transparent); }
+  .layer[data-enc="flag"]    { --c: var(--green); background: color-mix(in srgb, var(--green) 8%, transparent); }
+
+  .layer-badge {
+    display: inline-block;
+    font-size: 10px;
+    font-family: var(--mono);
+    font-weight: 700;
+    padding: 1px 6px;
+    border-radius: 3px;
+    background: color-mix(in srgb, var(--c) 18%, transparent);
+    color: var(--c);
+    border: 1px solid color-mix(in srgb, var(--c) 35%, transparent);
+    margin-bottom: 4px;
+  }
+
+  /* ─── DETAIL EXPAND ─── */
+  .layer-detail {
+    display: none;
+    grid-column: 1 / -1;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px 16px;
+    margin-top: 8px;
+    font-size: 12px;
+  }
+  .layer.open .layer-detail { display: block; }
+  .layer.open { background: var(--bg2); }
+
+  .detail-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 10px;
+    margin-top: 8px;
+  }
+  .detail-item {}
+  .detail-item .dl { font-size: 10px; color: var(--fg3); font-family: var(--mono); text-transform: uppercase; letter-spacing: .06em; }
+  .detail-item .dv { font-family: var(--mono); color: var(--c); font-weight: 600; margin-top: 2px; font-size: 13px; }
+
+  /* ─── WHY BOX ─── */
+  .why-box {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--amber);
+    border-radius: 0 8px 8px 0;
+    padding: 16px 18px;
+    margin: 20px 0;
+  }
+  .why-box h4 { font-size: 13px; font-weight: 600; margin-bottom: 6px; color: var(--amber); }
+  .why-box p { font-size: 13px; margin-bottom: 6px; }
+
+  /* ─── CLUE TABLE ─── */
+  .clue-table { width: 100%; border-collapse: collapse; margin-top: 12px; }
+  .clue-table th {
+    text-align: left;
+    font-family: var(--mono);
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: .08em;
+    color: var(--fg3);
+    border-bottom: 1px solid var(--border);
+    padding: 6px 10px 8px;
+  }
+  .clue-table td {
+    padding: 9px 10px;
+    border-bottom: 1px solid var(--border);
+    font-size: 13px;
+    vertical-align: top;
+  }
+  .clue-table tr:last-child td { border-bottom: none; }
+  .clue-table td:first-child { font-family: var(--mono); font-weight: 700; }
+  .clue-table td code { font-size: .85em; }
+
+  /* ─── SCRIPT SECTION ─── */
+  .code-block {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow-x: auto;
+    margin-top: 16px;
+  }
+  .code-block pre {
+    padding: 18px 20px;
+    font-family: var(--mono);
+    font-size: 12px;
+    line-height: 1.7;
+    color: var(--fg2);
+  }
+  .code-block .kw { color: var(--mauve); }
+  .code-block .fn { color: var(--blue); }
+  .code-block .cm { color: var(--fg3); font-style: italic; }
+  .code-block .st { color: var(--green); }
+  .code-block .nm { color: var(--peach); }
+
+  /* ─── FLAG ─── */
+  .flag-box {
+    background: color-mix(in srgb, var(--green) 8%, var(--bg2));
+    border: 1px solid color-mix(in srgb, var(--green) 30%, var(--border));
+    border-radius: 10px;
+    padding: 20px 24px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-top: 8px;
+  }
+  .flag-icon { font-size: 28px; flex-shrink: 0; }
+  .flag-text {
+    font-family: var(--mono);
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--green);
+    letter-spacing: .02em;
+    word-break: break-all;
+  }
+  .flag-copy {
+    margin-left: auto;
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    color: var(--fg2);
+    padding: 6px 14px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-family: var(--mono);
+    font-size: 12px;
+    white-space: nowrap;
+  }
+  .flag-copy:hover { border-color: var(--green); color: var(--green); }
+
+  /* ─── RESPONSIVE ─── */
+  @media (max-width: 600px) {
+    .enc-grid { grid-template-columns: 1fr; }
+    .layer { grid-template-columns: 28px 90px 1fr; }
+    .layer-len { display: none; }
+    .ratio-row { grid-template-columns: 60px 1fr 50px; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .ratio-bar { transition: none; }
+  }
+
+  /* layer header row */
+  .layer-header {
+    display: grid;
+    grid-template-columns: 36px 110px 1fr 80px;
+    gap: 0 12px;
+    padding: 6px 0;
+    border-bottom: 2px solid var(--border);
+  }
+  .layer-header span {
+    font-family: var(--mono);
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: .08em;
+    color: var(--fg3);
+  }
+  @media (max-width: 600px) {
+    .layer-header { grid-template-columns: 28px 90px 1fr; }
+    .layer-header span:last-child { display: none; }
+  }
+</style>
+
+<header class="site-header">
+  <h1>⬛ Base Jumper <span>— CTF Crypto Writeup</span></h1>
+  <button class="theme-btn" onclick="toggleTheme()">☀/☾</button>
+</header>
+
+<nav>
+  <div class="toc">
+    <a href="#enc">Encoding Types</a>
+    <a href="#identify">Cara Identifikasi</a>
+    <a href="#trace">15-Layer Trace</a>
+    <a href="#why">Kenapa Urutan Itu</a>
+    <a href="#script">Script Solver</a>
+    <a href="#flag">Flag</a>
+  </div>
+</nav>
+
+<!-- ─── SECTION 1 ─── -->
+<section id="enc">
+  <h2><span class="num">01</span>Lima Jenis Encoding</h2>
+  <p>Setiap encoding mengubah data biner jadi teks yang "aman" dikirim. Bedanya ada di <strong>charset</strong> (karakter yang dipakai), <strong>rasio ukuran</strong>, dan <strong>padding</strong>.</p>
+
+  <div class="enc-grid">
+
+    <div class="enc-card" data-enc="b16">
+      <div class="enc-name">Base16 / Hex</div>
+      <div class="enc-sample"><span class="hl">48 65 6C 6C 6F</span><br>→ "Hello"</div>
+      <div class="enc-stats">
+        <div class="stat-box"><div class="stat-label">Charset</div><div class="stat-val">16 char</div></div>
+        <div class="stat-box"><div class="stat-label">Ukuran</div><div class="stat-val">2.00×</div></div>
+        <div class="stat-box"><div class="stat-label">Padding</div><div class="stat-val">Tidak ada</div></div>
+        <div class="stat-box"><div class="stat-label">Karakter</div><div class="stat-val">0-9 A-F</div></div>
+      </div>
+      <ul class="enc-rules">
+        <li>Setiap byte = 2 digit hex persis</li>
+        <li>Hanya angka & huruf A–F (atau a–f)</li>
+        <li>Panjang output SELALU genap</li>
+        <li>Paling mudah dikenali, terpendek charset-nya</li>
+      </ul>
+    </div>
+
+    <div class="enc-card" data-enc="b32">
+      <div class="enc-name">Base32</div>
+      <div class="enc-sample"><span class="hl">JBSWY3DP</span>FQQFO33S<br>NRSCC===</div>
+      <div class="enc-stats">
+        <div class="stat-box"><div class="stat-label">Charset</div><div class="stat-val">32 char</div></div>
+        <div class="stat-box"><div class="stat-label">Ukuran</div><div class="stat-val">1.60×</div></div>
+        <div class="stat-box"><div class="stat-label">Padding</div><div class="stat-val">= (sampai 6)</div></div>
+        <div class="stat-box"><div class="stat-label">Karakter</div><div class="stat-val">A-Z 2-7</div></div>
+      </div>
+      <ul class="enc-rules">
+        <li>Hanya huruf kapital A–Z dan angka 2–7</li>
+        <li>Tidak ada angka 0, 1, 8, 9</li>
+        <li>Padding <code>=</code> kelipatan 8</li>
+        <li>Tidak case-sensitive saat decode</li>
+      </ul>
+    </div>
+
+    <div class="enc-card" data-enc="b64">
+      <div class="enc-name">Base64</div>
+      <div class="enc-sample"><span class="hl">SGVsbG8s</span> IFdvcmxk<br>IQ==</div>
+      <div class="enc-stats">
+        <div class="stat-box"><div class="stat-label">Charset</div><div class="stat-val">64 char</div></div>
+        <div class="stat-box"><div class="stat-label">Ukuran</div><div class="stat-val">1.33×</div></div>
+        <div class="stat-box"><div class="stat-label">Padding</div><div class="stat-val">= atau ==</div></div>
+        <div class="stat-box"><div class="stat-label">Karakter</div><div class="stat-val">A-Z a-z 0-9 +/</div></div>
+      </div>
+      <ul class="enc-rules">
+        <li>Huruf kapital + kecil + angka + <code>+</code> <code>/</code></li>
+        <li>Padding <code>=</code> di akhir, kelipatan 4</li>
+        <li>Paling umum dipakai di CTF</li>
+        <li>Varian URL-safe pakai <code>-</code> <code>_</code> ganti <code>+</code> <code>/</code></li>
+      </ul>
+    </div>
+
+    <div class="enc-card" data-enc="b85">
+      <div class="enc-name">Base85 (Python)</div>
+      <div class="enc-sample"><span class="hl">NM&qnZ!</span>92JZ*pv8Ap</div>
+      <div class="enc-stats">
+        <div class="stat-box"><div class="stat-label">Charset</div><div class="stat-val">85 char</div></div>
+        <div class="stat-box"><div class="stat-label">Ukuran</div><div class="stat-val">1.25×</div></div>
+        <div class="stat-box"><div class="stat-label">Padding</div><div class="stat-val">Tidak ada</div></div>
+        <div class="stat-box"><div class="stat-label">Karakter</div><div class="stat-val">ASCII 33–117</div></div>
+      </div>
+      <ul class="enc-rules">
+        <li>Encode 4 byte → 5 karakter ASCII</li>
+        <li>Karakter aneh: <code>!</code> <code>&</code> <code>*</code> <code>&lt;</code> <code>&gt;</code> <code>^</code></li>
+        <li>Python's <code>base64.b85encode()</code></li>
+        <li>Charset berbeda dari ASCII85!</li>
+      </ul>
+    </div>
+
+    <div class="enc-card" data-enc="a85">
+      <div class="enc-name">ASCII85 / Base85 (Adobe)</div>
+      <div class="enc-sample"><span class="hl">87cURD_</span>*#4DfTZ)+T</div>
+      <div class="enc-stats">
+        <div class="stat-box"><div class="stat-label">Charset</div><div class="stat-val">85 char</div></div>
+        <div class="stat-box"><div class="stat-label">Ukuran</div><div class="stat-val">1.25×</div></div>
+        <div class="stat-box"><div class="stat-label">Padding</div><div class="stat-val">Tidak ada</div></div>
+        <div class="stat-box"><div class="stat-label">Karakter</div><div class="stat-val">ASCII 33–117</div></div>
+      </div>
+      <ul class="enc-rules">
+        <li>Karakter aneh: <code>#</code> <code>)</code> <code>*</code> <code>+</code> <code>4</code> dll</li>
+        <li>Python's <code>base64.a85encode()</code></li>
+        <li>Mirip base85 tapi charset berbeda</li>
+        <li>Adobe style ada wrapper <code>&lt;~</code> ... <code>~&gt;</code></li>
+      </ul>
+    </div>
+
+  </div>
+
+  <!-- Charset comparison -->
+  <div class="charset-section">
+    <h3 style="font-size:14px;margin-bottom:14px;color:var(--fg2);font-family:var(--mono);text-transform:uppercase;letter-spacing:.06em;">Charset per Encoding — "Hello, World!" </h3>
+    <div class="charset-row" data-enc="b16">
+      <span class="charset-label">Base16</span>
+      <div class="charset-chars">48656C6C6F2C20576F726C6421<br><em style="color:var(--fg3);font-size:10px;">hanya: 0-9 A-F (16 karakter)</em></div>
+    </div>
+    <div class="charset-row" data-enc="b32">
+      <span class="charset-label">Base32</span>
+      <div class="charset-chars">JBSWY3DPFQQFO33SNRSCC===<br><em style="color:var(--fg3);font-size:10px;">hanya: A-Z 2-7 dan = (33 karakter maks)</em></div>
+    </div>
+    <div class="charset-row" data-enc="b64">
+      <span class="charset-label">Base64</span>
+      <div class="charset-chars">SGVsbG8sIFdvcmxkIQ==<br><em style="color:var(--fg3);font-size:10px;">A-Z a-z 0-9 + / = (65 karakter maks)</em></div>
+    </div>
+    <div class="charset-row" data-enc="b85">
+      <span class="charset-label">Base85</span>
+      <div class="charset-chars">NM&amp;qnZ!92JZ*pv8Ap<br><em style="color:var(--fg3);font-size:10px;">ASCII 33–117: includes ! " # $ % &amp; ' ( ) * + , - dll</em></div>
+    </div>
+    <div class="charset-row" data-enc="a85">
+      <span class="charset-label">ASCII85</span>
+      <div class="charset-chars">87cURD_*#4DfTZ)+T<br><em style="color:var(--fg3);font-size:10px;">ASCII 33–117: charset sama tapi mapping berbeda</em></div>
+    </div>
+  </div>
+
+  <!-- Size ratio -->
+  <div style="margin-top: 28px;">
+    <h3 style="font-size:14px;margin-bottom:6px;color:var(--fg2);font-family:var(--mono);text-transform:uppercase;letter-spacing:.06em;">Rasio Ukuran Output / Input</h3>
+    <p style="font-size:12px;margin-bottom:14px;">Makin tinggi rasio = makin boros karakter = makin mudah diidentifikasi (lebih panjang dari aslinya).</p>
+    <div class="ratio-grid">
+      <div class="ratio-row" data-enc="b16">
+        <span class="ratio-name">Base16</span>
+        <div class="ratio-bar-wrap"><div class="ratio-bar" style="width:100%">2.00× — 2 char per byte</div></div>
+        <span class="ratio-num">2.00×</span>
+      </div>
+      <div class="ratio-row" data-enc="b32">
+        <span class="ratio-name">Base32</span>
+        <div class="ratio-bar-wrap"><div class="ratio-bar" style="width:80%">1.60×</div></div>
+        <span class="ratio-num">1.60×</span>
+      </div>
+      <div class="ratio-row" data-enc="b64">
+        <span class="ratio-name">Base64</span>
+        <div class="ratio-bar-wrap"><div class="ratio-bar" style="width:66.5%">1.33×</div></div>
+        <span class="ratio-num">1.33×</span>
+      </div>
+      <div class="ratio-row" data-enc="b85">
+        <span class="ratio-name">Base85</span>
+        <div class="ratio-bar-wrap"><div class="ratio-bar" style="width:62.5%">1.25×</div></div>
+        <span class="ratio-num">1.25×</span>
+      </div>
+      <div class="ratio-row" data-enc="a85">
+        <span class="ratio-name">ASCII85</span>
+        <div class="ratio-bar-wrap"><div class="ratio-bar" style="width:62.5%">1.25×</div></div>
+        <span class="ratio-num">1.25×</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── SECTION 2 ─── -->
+<section id="identify">
+  <h2><span class="num">02</span>Cara Identifikasi Visual</h2>
+  <p>Di CTF, kita tidak selalu tahu enkoding apa yang dipakai. Ini cara membaca ciri-cirinya dengan cepat:</p>
+
+  <div class="why-box">
+    <h4>📌 Urutan cek yang efisien</h4>
+    <p>1. Cek charset dulu → 2. Cek panjang / padding → 3. Coba decode → 4. Hasil valid?</p>
+    <p>Jika hasil decode masih berisi karakter printable, kemungkinan besar berhasil dan ada layer berikutnya.</p>
+  </div>
+
+  <table class="clue-table">
+    <thead>
+      <tr>
+        <th>Encoding</th>
+        <th>Ciri Visual Utama</th>
+        <th>Ciri Negatif (eliminasi)</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td style="color:var(--b16-c)">Base16</td>
+        <td>Hanya <code>0-9</code> dan <code>A-F</code> / <code>a-f</code>. Panjang selalu genap. Terasa "lebih panjang 2×".</td>
+        <td>Tidak ada huruf G–Z, tidak ada karakter spesial.</td>
+      </tr>
+      <tr>
+        <td style="color:var(--b32-c)">Base32</td>
+        <td>Hanya huruf kapital <code>A-Z</code> dan angka <code>2-7</code>. Sering diakhiri <code>===</code> atau <code>======</code>.</td>
+        <td>Tidak ada angka 0, 1, 8, 9. Tidak ada huruf kecil.</td>
+      </tr>
+      <tr>
+        <td style="color:var(--b64-c)">Base64</td>
+        <td>Campuran huruf kecil & besar + angka + <code>+/</code>. Diakhiri <code>=</code> atau <code>==</code>.</td>
+        <td>Tidak ada karakter aneh seperti <code>!</code> <code>&lt;</code> <code>&gt;</code>.</td>
+      </tr>
+      <tr>
+        <td style="color:var(--b85-c)">Base85 (Py)</td>
+        <td>Ada karakter <code>!</code> <code>&lt;</code> <code>&gt;</code> <code>^</code> <code>*</code> <code>&amp;</code>. Terasa lebih "berantakan".</td>
+        <td>Tidak ada <code>=</code> padding. Tidak ada spasi.</td>
+      </tr>
+      <tr>
+        <td style="color:var(--a85-c)">ASCII85</td>
+        <td>Ada karakter <code>#</code> <code>)</code> <code>*</code> <code>+</code> <code>_</code> <code>~</code>. Mirip base85 tapi berbeda distribusi.</td>
+        <td>Versi Adobe diawali <code>&lt;~</code> dan diakhiri <code>~&gt;</code> — tapi versi Python tidak.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div style="margin-top: 20px; background: var(--bg2); border: 1px solid var(--border); border-radius: 8px; padding: 16px 18px;">
+    <h3 style="font-size:13px;margin-bottom:10px;font-family:var(--mono);">💡 Cara membedakan Base85 vs ASCII85</h3>
+    <p style="font-size:13px;">Keduanya pakai 85 karakter dari ASCII 33–117, tapi dengan <strong>mapping yang berbeda</strong>. Artinya charset-nya identik, tapi urutan/nilai per karakternya beda. Kamu harus coba keduanya dan lihat mana yang menghasilkan output valid (printable).</p>
+    <p style="font-size:13px;margin-top:8px;">Di Python: <code>base64.b85decode()</code> untuk base85, <code>base64.a85decode()</code> untuk ascii85.</p>
+  </div>
+</section>
+
+<!-- ─── SECTION 3 ─── -->
+<section id="trace">
+  <h2><span class="num">03</span>Trace 15-Layer Lengkap</h2>
+  <p class="trace-intro">Klik tiap baris untuk melihat detail kenapa layer ini teridentifikasi sebagai encoding tertentu.</p>
+
+  <div class="layer-header">
+    <span>#</span>
+    <span>Method</span>
+    <span>Output Preview</span>
+    <span style="text-align:right">Panjang</span>
+  </div>
+
+  <div class="layer-list" id="layers"></div>
+</section>
+
+<!-- ─── SECTION 4 ─── -->
+<section id="why">
+  <h2><span class="num">04</span>Kenapa Urutannya Bisa Berbeda-beda?</h2>
+  <p>Ini bagian yang paling penting untuk dipahami. Enkoding dilakukan <strong>secara acak</strong> — artinya setiap kali challenge ini di-generate, urutannya bisa berbeda.</p>
+
+  <div class="why-box">
+    <h4>🎲 Randomisasi = Tidak ada urutan "benar" yang tetap</h4>
+    <p>Soal menyebut "15 kali secara acak". Artinya script pembuat challenge memanggil random.choice(['base64','base32','base16','base85','ascii85']) sebanyak 15 kali dan menerapkannya bertumpuk.</p>
+    <p>Jadi file yang kamu terima bisa saja berbeda dari file orang lain yang mendownload challenge yang sama di waktu berbeda!</p>
+  </div>
+
+  <h3 style="margin-top:24px">Kenapa harus brute-force semua kemungkinan?</h3>
+  <p>Karena tidak ada header/marker yang menunjukkan "ini base64" atau "ini base32". Satu-satunya cara adalah:</p>
+
+  <div style="background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:16px 18px;margin:12px 0;">
+    <ol style="padding-left:20px;color:var(--fg2);font-size:13px;line-height:2;">
+      <li>Coba decode dengan semua metode yang mungkin</li>
+      <li>Filter hasil yang "masuk akal" (>90% karakter printable)</li>
+      <li>Rekursif lakukan hal yang sama pada setiap hasil valid</li>
+      <li>Berhenti saat menemukan string <code>REDLIMIT{</code></li>
+    </ol>
+  </div>
+
+  <h3 style="margin-top:24px">Kenapa DFS (Depth-First) bukan BFS?</h3>
+  <p>Secara teori BFS lebih aman (tidak akan stuck di path salah). Tapi di challenge ini DFS langsung berhasil di percobaan pertama karena:</p>
+  <div style="background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:16px 18px;margin:12px 0;">
+    <ul style="padding-left:20px;color:var(--fg2);font-size:13px;line-height:2;">
+      <li>Hanya <strong>satu path yang valid</strong> sampai kedalaman 15 — encoding yang salah hampir pasti menghasilkan output binary/non-printable</li>
+      <li>Setiap decode yang "berhasil" (printable) memang selalu merupakan encoding valid karena data aslinya memang encoded text</li>
+      <li>Tidak ada "false positive path" yang panjang</li>
+    </ul>
+  </div>
+
+  <h3 style="margin-top:24px">Kenapa ukuran berkurang setiap layer?</h3>
+  <p>Karena kita sedang <strong>mendecode</strong> (mengurai), bukan encode. Setiap encoding menambah ukuran, jadi setiap decode menguranginya. Lihat pola di trace:</p>
+  <div style="font-family:var(--mono);font-size:12px;background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:14px 16px;line-height:2;overflow-x:auto;">
+    19735 → 15788 → 11840 → 5920 → 3700 → 2960 → 1480 → 740 → 592 → 296 → 185 → 148 → 118 → 59 → 47 → <span style="color:var(--green);font-weight:700">37</span>
+  </div>
+  <p style="margin-top:8px;font-size:13px;">Dari 19.735 karakter → 37 karakter (flag). Setiap layer encoding memang menambah overhead ukuran.</p>
+</section>
+
+<!-- ─── SECTION 5 ─── -->
+<section id="script">
+  <h2><span class="num">05</span>Script Solver</h2>
+  <p>Script ini menggunakan DFS rekursif — mencoba semua metode decode di setiap level dan melanjutkan hanya jika hasilnya valid (printable).</p>
+
+  <div class="code-block">
+    <pre><span class="kw">import</span> base64
+
+<span class="kw">def</span> <span class="fn">try_decode</span>(data):
+    <span class="cm">"""Coba semua metode decode, return list (method, result)"""</span>
+    results = []
+    <span class="kw">if isinstance</span>(data, str):
+        data = data.encode(<span class="st">'latin-1'</span>)
+
+    <span class="cm"># Base16 — hanya 0-9 A-F, panjang output = 2x input</span>
+    <span class="kw">try</span>:
+        results.append((<span class="st">'base16'</span>, base64.b16decode(data.upper())))
+    <span class="kw">except</span>: <span class="kw">pass</span>
+
+    <span class="cm"># Base32 — hanya A-Z 2-7, padding kelipatan 8</span>
+    <span class="kw">try</span>:
+        pad = len(data) % <span class="nm">8</span>
+        <span class="kw">if</span> pad: data_p = data + b<span class="st">'='</span> * (<span class="nm">8</span> - pad)
+        results.append((<span class="st">'base32'</span>, base64.b32decode(data_p.upper())))
+    <span class="kw">except</span>: <span class="kw">pass</span>
+
+    <span class="cm"># Base64 — A-Z a-z 0-9 +/, padding kelipatan 4</span>
+    <span class="kw">try</span>:
+        pad = len(data) % <span class="nm">4</span>
+        <span class="kw">if</span> pad: data_p = data + b<span class="st">'='</span> * (<span class="nm">4</span> - pad)
+        results.append((<span class="st">'base64'</span>, base64.b64decode(data_p)))
+    <span class="kw">except</span>: <span class="kw">pass</span>
+
+    <span class="cm"># Base85 (Python) — ASCII 33-117, encode 4 byte → 5 char</span>
+    <span class="kw">try</span>:
+        results.append((<span class="st">'base85'</span>, base64.b85decode(data)))
+    <span class="kw">except</span>: <span class="kw">pass</span>
+
+    <span class="cm"># ASCII85 — charset sama tapi mapping berbeda dari base85</span>
+    <span class="kw">try</span>:
+        results.append((<span class="st">'ascii85'</span>, base64.a85decode(data, adobe=<span class="kw">False</span>)))
+    <span class="kw">except</span>: <span class="kw">pass</span>
+
+    <span class="kw">return</span> results
+
+<span class="kw">def</span> <span class="fn">is_valid</span>(data):
+    <span class="cm">"""Cek apakah hasil decode berupa teks yang bisa dibaca"""</span>
+    <span class="kw">try</span>:
+        text = data.decode(<span class="st">'utf-8'</span>)
+    <span class="kw">except</span>:
+        <span class="kw">try</span>: text = data.decode(<span class="st">'latin-1'</span>)
+        <span class="kw">except</span>: <span class="kw">return False</span>
+    ratio = sum(<span class="nm">1</span> <span class="kw">for</span> c <span class="kw">in</span> text <span class="kw">if</span> c.isprintable()) / len(text)
+    <span class="kw">return</span> ratio > <span class="nm">0.9</span>  <span class="cm"># >90% printable = valid</span>
+
+<span class="kw">def</span> <span class="fn">solve</span>(data, depth=<span class="nm">0</span>, path=[]):
+    <span class="cm">"""DFS rekursif — coba decode sampai ketemu flag"""</span>
+    text = data.decode(<span class="st">'utf-8'</span>, errors=<span class="st">'replace'</span>) <span class="kw">if isinstance</span>(data, bytes) <span class="kw">else</span> data
+    <span class="kw">if</span> <span class="st">'REDLIMIT{'</span> <span class="kw">in</span> text:
+        <span class="fn">print</span>(<span class="st">f"✅ FLAG: </span>{text}<span class="st">"</span>)
+        <span class="fn">print</span>(<span class="st">f"Path: </span>{<span class="st">' → '</span>.join(path)}<span class="st">"</span>)
+        <span class="kw">return True</span>
+    <span class="kw">if</span> depth > <span class="nm">20</span>: <span class="kw">return False</span>
+
+    <span class="kw">for</span> method, decoded <span class="kw">in</span> <span class="fn">try_decode</span>(data):
+        <span class="kw">if</span> <span class="fn">is_valid</span>(decoded):
+            <span class="kw">if</span> <span class="fn">solve</span>(decoded, depth+<span class="nm">1</span>, path+[method]):
+                <span class="kw">return True</span>
+    <span class="kw">return False</span>
+
+<span class="kw">with</span> <span class="fn">open</span>(<span class="st">'output.txt'</span>) <span class="kw">as</span> f:
+    <span class="fn">solve</span>(f.read().strip())</pre>
+  </div>
+</section>
+
+<!-- ─── FLAG ─── -->
+<section id="flag">
+  <h2><span class="num">06</span>Flag</h2>
+  <p>Setelah 15 layer decode, hasilnya:</p>
+  <div class="flag-box">
+    <div class="flag-icon">🚩</div>
+    <div class="flag-text" id="flagText">REDLIMIT{b4s3_jump1ng_thr0ugh_l4y3rs}</div>
+    <button class="flag-copy" id="copyBtn" onclick="copyFlag()">Salin</button>
+  </div>
+</section>
+
+<script>
+const LAYERS = [
+  {
+    num: '▶',
+    enc: 'input',
+    method: 'INPUT',
+    preview: 'PDE>ZPE=KSPE<`XPI^^$O?pi*PE=7fO?p)^O=?v%PDD*GQB+Yd...',
+    len: 19735,
+    why: 'Karakter awal: P, D, E, >, Z, <, `, ^, ?, * — ini karakter ASCII 33–117 yang merupakan ciri khas BASE85 (Python). Bukan Base64 karena ada < > ^ *, bukan Base32 karena ada huruf kecil dan karakter spesial.',
+    details: { 'Charset terlihat': 'ASCII spesial + alfanumerik', 'Karakter aneh': '< > ^ * ` !', 'Kesimpulan': 'BASE85 (Python b85)' }
+  },
+  {
+    num: '1',  enc: 'base85',  method: 'base85',
+    preview: 'NDkzNTUyNTM1NzUwMzM0NTQ5MzU1MjU4NDM0QTQ0NDI0OTM1NT...',
+    len: 15788,
+    why: 'Hasil decode base85 → string yang hanya berisi 0-9 dan A-Z kapital. Tidak ada karakter spesial. Tapi ada huruf A-Z sampai F dan angka penuh — ini BUKAN base16 (yang hanya 0-F), tapi lebih mirip BASE64 karena ada huruf sampai Z.',
+    details: { 'Charset hasil': '0-9 A-Z kapital', 'Padding': 'Tidak ada = di akhir', 'Kesimpulan': 'BASE64 (tanpa padding, akan ditambah manual)' }
+  },
+  {
+    num: '2',  enc: 'base64',  method: 'base64',
+    preview: '493552535750334549355258434A444249355344494D33...',
+    len: 11840,
+    why: 'Hasil decode base64 → hanya karakter 0-9 dan A-F. Panjangnya genap (11840). PERSIS ciri BASE16: hanya hex characters, panjang kelipatan 2.',
+    details: { 'Charset hasil': '0-9 A-F saja', 'Panjang': '11840 (genap)', 'Kesimpulan': 'BASE16 — klasik hex encoding' }
+  },
+  {
+    num: '3',  enc: 'base16',  method: 'base16',
+    preview: 'I5RSWP3EI5RXCJDBI5SDIM3EI5RSWX3BI5SDIM3DI5RSWP3F...',
+    len: 5920,
+    why: 'Hasil decode base16 → huruf besar A-Z dan angka 2-7 dan 3. Tidak ada angka 0, 1, 8, 9. Tidak ada huruf kecil. Ini ciri khas BASE32.',
+    details: { 'Charset hasil': 'A-Z dan 2-7', 'Tidak ada': '0, 1, 8, 9, huruf kecil', 'Kesimpulan': 'BASE32' }
+  },
+  {
+    num: '4',  enc: 'base32',  method: 'base32',
+    preview: "Gc+?dGcq$aGd43dGc+_aGd43cGc+?eGcz+dGd46eGc+?fGd43d...",
+    len: 3700,
+    why: 'Hasil decode base32 → ada karakter + ? $ _ < > yang tidak mungkin dari base16/32/64. Ini lagi-lagi BASE85 atau ASCII85. Script mencoba base85 duluan dan hasilnya valid.',
+    details: { 'Charset hasil': 'alfanumerik + spesial', 'Karakter spesial': '+ ? $ _ < > dll', 'Kesimpulan': 'BASE85 (lagi)' }
+  },
+  {
+    num: '5',  enc: 'base85',  method: 'base85',
+    preview: '343732363635344336343438333836453439363534373238...',
+    len: 2960,
+    why: 'Hasil → kembali ke hex characters 0-9 A-F. BASE16 lagi.',
+    details: { 'Charset hasil': '0-9 A-F', 'Panjang': 'genap', 'Kesimpulan': 'BASE16' }
+  },
+  {
+    num: '6',  enc: 'base16',  method: 'base16',
+    preview: '4726654C6448386E49654728737E6E47637A3C7047266549...',
+    len: 1480,
+    why: 'Hasil → hex characters lagi. BASE16 satu kali lagi.',
+    details: { 'Charset hasil': '0-9 A-F', 'Panjang': 'genap', 'Kesimpulan': 'BASE16 (layer ke-2 berturut-turut)' }
+  },
+  {
+    num: '7',  enc: 'base16',  method: 'base16',
+    preview: 'G&eLdH8nIeG(s~nGcz<pG&eIeGcq+aG)6TsG&D6dG&VIcGdDF...',
+    len: 740,
+    why: 'Hasil → karakter spesial lagi (& ~ < >). BASE85 atau ASCII85. Script coba base85 dan valid.',
+    details: { 'Charset hasil': 'alfanumerik + & ~ < >', 'Kelompok': 'ASCII 33-117', 'Kesimpulan': 'BASE85' }
+  },
+  {
+    num: '8',  enc: 'base85',  method: 'base85',
+    preview: '474255444B32334C473432544F5144544651375551563349...',
+    len: 592,
+    why: 'Kembali ke hex. BASE16.',
+    details: { 'Charset hasil': '0-9 A-F', 'Pattern': 'hex murni', 'Kesimpulan': 'BASE16' }
+  },
+  {
+    num: '9',  enc: 'base16',  method: 'base16',
+    preview: 'GBUDK23LG42TOQDTFQ7UQV3IFNNTQXSWIE4TATJSGBVUIXT...',
+    len: 296,
+    why: 'Huruf besar A-Z dan angka, tapi ada angka 2, 3, 4, 7 — masuk range BASE32 (2-7). Tidak ada 0, 1, 8, 9. BASE32.',
+    details: { 'Charset hasil': 'A-Z, 2-7', 'Tidak ada': '0, 1, 8, 9', 'Kesimpulan': 'BASE32' }
+  },
+  {
+    num: '10', enc: 'base32',  method: 'base32',
+    preview: '0h5kk757@s,?HWh+[8^VA90M20kD^o<A@rhB3-i<Bm!H2/6...',
+    len: 185,
+    why: 'Karakter @ , ? [ ^ < - ! / — sangat berantakan. Ini ASCII85 (bukan base85 Python karena distribusi karakter berbeda).',
+    details: { 'Karakter khas': '@ , ? [ ^ < - !', 'Bukan base85': 'distribusi berbeda', 'Kesimpulan': 'ASCII85 (a85decode)' }
+  },
+  {
+    num: '11', enc: 'ascii85', method: 'ascii85',
+    preview: "1GgjE1I=#W2E!?N1ds2\\1e';U1b^gW2*iuV1,UjV2+'...",
+    len: 148,
+    why: "Masih ada karakter # = ' \\ ^ * , + — ASCII85 lagi.",
+    details: { 'Karakter khas': "# = ' \\ ^ *", 'Pattern': 'ASCII85 lagi', 'Kesimpulan': 'ASCII85 (layer ke-2)' }
+  },
+  {
+    num: '12', enc: 'ascii85', method: 'ascii85',
+    preview: "34253B7466384E394F40406F5A27253E5C3F6E67394C606B...",
+    len: 118,
+    why: 'Hex characters. BASE16.',
+    details: { 'Charset hasil': '0-9 A-F', 'Panjang': 'genap', 'Kesimpulan': 'BASE16' }
+  },
+  {
+    num: '13', enc: 'base16',  method: 'base16',
+    preview: "4%;tf8N9O@@oZ'%>\\?ng9L`k_6n_n(8O>6Y@;eS>9ijtS:Hh...",
+    len: 59,
+    why: "Ada % ; @ ' > \\ ? ` _ — karakter ASCII85 yang khas. Decode dengan a85decode berhasil.",
+    details: { 'Karakter khas': "% ; @ ' > \\ ? `", 'Kesimpulan': 'ASCII85' }
+  },
+  {
+    num: '14', enc: 'ascii85', method: 'ascii85',
+    preview: ";FNuI8PMcUHX\\gQ1LFm>D/_4IB4#aoE\\MWKBO>R4Gr'J^I/",
+    len: 47,
+    why: "Masih ada karakter ; \\ > / # ^ — ASCII85 satu layer terakhir.",
+    details: { 'Karakter khas': "; \\ > / # ^ '", 'Mendekati flag': 'ukuran sudah kecil (47)', 'Kesimpulan': 'ASCII85 (layer terakhir)' }
+  },
+  {
+    num: '15', enc: 'ascii85', method: 'ascii85',
+    preview: 'REDLIMIT{b4s3_jump1ng_thr0ugh_l4y3rs}',
+    len: 37,
+    why: 'DONE! Setelah 15 layer decode, ketemu flag.',
+    details: { 'Hasil akhir': 'REDLIMIT{...}', 'Format': 'sesuai flag format', 'Status': '✅ SOLVED' }
+  },
+];
+
+function renderLayers() {
+  const container = document.getElementById('layers');
+  LAYERS.forEach((l, i) => {
+    const div = document.createElement('div');
+    div.className = 'layer';
+    div.setAttribute('data-enc', l.enc);
+
+    const detailHtml = `
+      <div class="layer-detail">
+        <div style="font-size:12px;color:var(--fg2);margin-bottom:8px;line-height:1.6;">${l.why}</div>
+        <div class="detail-grid">
+          ${Object.entries(l.details).map(([k,v]) => `
+            <div class="detail-item">
+              <div class="dl">${k}</div>
+              <div class="dv">${v}</div>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    `;
+
+    div.innerHTML = `
+      <div class="layer-num">${l.num}</div>
+      <div class="layer-method"><span class="layer-badge">${l.method}</span></div>
+      <div class="layer-preview">${l.preview.replace(/</g,'&lt;').replace(/>/g,'&gt;')}</div>
+      <div class="layer-len"><span>${l.len.toLocaleString()}</span> chr</div>
+      ${detailHtml}
+    `;
+    div.addEventListener('click', () => div.classList.toggle('open'));
+    container.appendChild(div);
+  });
+}
+
+function copyFlag() {
+  const text = document.getElementById('flagText').textContent;
+  const btn = document.getElementById('copyBtn');
+  navigator.clipboard.writeText(text).then(() => {
+    btn.textContent = 'Tersalin!';
+    setTimeout(() => btn.textContent = 'Salin', 2000);
+  }).catch(() => {
+    const range = document.createRange();
+    range.selectNode(document.getElementById('flagText'));
+    window.getSelection().removeAllRanges();
+    window.getSelection().addRange(range);
+  });
+}
+
+function toggleTheme() {
+  const root = document.documentElement;
+  const cur = root.getAttribute('data-theme');
+  root.setAttribute('data-theme', cur === 'dark' ? 'light' : 'dark');
+}
+
+renderLayers();
+</script>
+
+</body></html>
